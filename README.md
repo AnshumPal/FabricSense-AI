@@ -70,3 +70,9 @@ All code and documentation in this repository are released under [Your License C
 
 ## Acknowledgment
 We gratefully acknowledge the creators of the **DeepTextile dataset** (Danika Gupta and collaborators) and SPECIM for providing access to the FX-17 hyperspectral imaging system.
+
+
+
+0 → Cotton
+1 → Cotton/Poly blend
+2 → Poly/Spandex
