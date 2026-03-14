@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 
 interface FileUploadProps {
-  onFileUpload: (data: number[][], headers: string[], file: File) => void
-  onPredict: () => void
+  onFileUpload: (data: number[][], headers: string[]) => void
+  onPredict: () => void  // 🔥 FIXED: No parameters - uses parent's csvData
   isLoading: boolean
   hasFile: boolean
 }
@@ -43,7 +43,7 @@ export function FileUpload({ onFileUpload, onPredict, isLoading, hasFile }: File
             data.push(values)
           }
           setFileName(file.name)
-          onFileUpload(data, headers, file)
+          onFileUpload(data, headers)  // ✅ Passes parsed CSV to parent
         } catch (err) {
           setError(err instanceof Error ? err.message : "Failed to parse CSV file.")
           setFileName(null)
@@ -83,6 +83,11 @@ export function FileUpload({ onFileUpload, onPredict, isLoading, hasFile }: File
   const handleRemoveFile = () => {
     setFileName(null)
     setError(null)
+  }
+
+  // 🔥 FIXED: No parameters - parent already has csvData
+  const handlePredict = () => {
+    onPredict()  // Calls parent's handlePredict() - uses csvData state
   }
 
   return (
@@ -159,7 +164,7 @@ export function FileUpload({ onFileUpload, onPredict, isLoading, hasFile }: File
         )}
 
         <Button
-          onClick={onPredict}
+          onClick={handlePredict}
           disabled={!hasFile || isLoading}
           className="w-full"
           size="lg"

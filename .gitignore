@@ -1,10 +1,40 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Next.js build output
+.next/
+out/
+
+# Environment files — never commit secrets
+.env.local
+.env.production
+.env*.local
+backend/fabric_backend/.env
+
+# ML model files — too large for git (deploy separately or use Git LFS)
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+
 # v0 runtime files
 __v0_runtime_loader.js
 __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
 
-# Common ignores
-node_modules/
-.next/
-.env*.local
-.DS_Store
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.vercel

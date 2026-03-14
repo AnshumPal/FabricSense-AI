@@ -1,101 +1,94 @@
-FabricSense AI: Hyperspectral Textile Classification
-====================================================
+# FabricSense AI
 
-Automated textile classification using hyperspectral imaging and deep learning for recycling and sustainable fashion.
+Hyperspectral textile classification system. Upload a CSV of spectral reflectance data and the model predicts the fabric type (Cotton, Cotton/Poly Blend, or Poly-Spandex) using a trained Random Forest classifier.
 
-Goal
-----
-To simplify automated textile sorting in recycling facilities by achieving 95%+ classification accuracy at the pixel level.
+---
 
-Problem
--------
-- Garment tags are often missing or incorrect, making manual sorting unreliable.
-- Manual sorting is labor-intensive and results in excessive textile waste.
+## Project Structure
 
-Solution
---------
-- Build a deep learning + hyperspectral imaging pipeline to classify textiles automatically.
-- Validation: Initial lab tests show >95% accuracy.
-- Future application: Real-time sorting integrated with conveyor belt systems.
+```
+/
+├── frontend/          # Next.js app (deploy to Vercel)
+└── backend/
+    └── fabric_backend/  # FastAPI server (deploy to Railway / Render)
+```
 
-Workflow Pipeline
------------------
-[Insert Workflow Pipeline Infographic Here]
-(Replace with your pipeline infographic showing preprocessing → model → prediction → sorting)
+---
 
-Dataset
--------
-Source: DeepTextile Dataset (BSD License)
-- Sample included: group_5_3_3/Joann_Fab_100Cotton_aggr_5_3_3_0_df.csv
-- Full dataset: https://github.com/danikagupta/DeepTextile
+## Running Locally
 
-Composition:
-- 15 fabrics across 5 categories:
-  1. Cotton
-  2. Polyester
-  3. Nylon
-  4. Cotton/Poly blends
-  5. Poly/Spandex blends
-- 224 hyperspectral bands per pixel using SPECIM FX-17 camera.
-- Aggregated pixel data (e.g., 3x3 grids) for more efficient processing.
+### Backend
 
-Milestones
-----------
-- [x] Create project space (Jira)
-- [x] Implement preprocessing pipeline
-- [x] Train baseline classifiers (SVM, CNN, Random Forest)
-- [ ] Optimize deep learning model for blends
-- [ ] Integrate prototype with conveyor belt hardware
-- [ ] Achieve >95% real-time sorting accuracy
+```bash
+cd backend/fabric_backend
+py -m pip install -r requirements.txt
+py -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
 
-Risks and Mitigation
---------------------
-Risk: Misclassification of blends
-Mitigation: Increase dataset variety of blended fabrics
+The API will be available at `http://localhost:8000`.
 
-Risk: Slow real-time inference
-Mitigation: Optimize PyTorch inference with quantization
+> The model file `textile_classifier_rf.pkl` must be placed in `backend/fabric_backend/model/`.
 
-Risk: Hardware integration challenges
-Mitigation: Start with a smaller prototype belt system
+### Frontend
 
-Supplementary Documents
------------------------
-- Hyperspectral textile classification research papers
-- Sample dataset CSV + README
-- Model architecture diagrams and flowcharts
-- Experiment logs (confusion matrices, accuracy reports)
-- Deployment plan for conveyor belt integration
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-Fab ID Mapping
---------------
-- 0 → Cotton
-- 1 → Cotton/Poly blend
-- 2 → Poly/Spandex
+The app will be available at `http://localhost:3000`.
 
-Reference
----------
-If you use the dataset, please cite:
+---
 
-@misc{gupta2024deeptextile,
-  title={DeepTextile: NIRS Dataset for Textile Classification},
-  author={Danika Gupta},
-  year={2024},
-  howpublished={https://github.com/danikagupta/DeepTextile},
-  note={Accessed: Today}
+## Environment Variables
+
+### Frontend (`frontend/.env.local`)
+
+| Variable | Description | Example |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:8000` |
+
+### Backend (`backend/fabric_backend/.env`)
+
+| Variable | Description | Example |
+|---|---|---|
+| `CORS_ORIGINS` | Comma-separated allowed frontend origins | `http://localhost:3000,https://your-app.vercel.app` |
+
+---
+
+## Deployment
+
+### Frontend → Vercel
+
+1. Push repo to GitHub
+2. Import project in [vercel.com](https://vercel.com)
+3. Set root directory to `frontend`
+4. Add environment variable: `NEXT_PUBLIC_API_URL=https://your-backend-url`
+
+### Backend → Railway / Render
+
+1. Set start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+2. Set working directory to `backend/fabric_backend`
+3. Add environment variable: `CORS_ORIGINS=https://your-app.vercel.app`
+4. Upload `textile_classifier_rf.pkl` to `model/` directory
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Health check |
+| GET | `/health` | Model status |
+| POST | `/predict` | Upload CSV, returns fabric prediction |
+
+### Prediction Response
+
+```json
+{
+  "predicted_fabric": "Cotton",
+  "confidence": 0.87,
+  "samples_processed": 1
 }
-
-License
--------
-- Dataset: BSD License (DeepTextile dataset)
-- Code: BSD 3-Clause License
-
-Contact
--------
-- Name: Anshum Pal
-- Email: anshum.pal04@gmail.com
-- Phone: +91 9370903013
-
-Acknowledgment
---------------
-Thanks to Danika Gupta and collaborators for creating the DeepTextile dataset and to SPECIM for providing access to the FX-17 hyperspectral imaging system.
+```
